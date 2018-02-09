@@ -1,4 +1,4 @@
-package assignment.lewisd97.railmate.Helpers;
+package assignment.lewisd97.railmate.src.Helpers;
 
 import java.lang.reflect.Field;
 
@@ -28,7 +28,7 @@ public class FontsOverride {
         }
     }
 
-    public static void setFonts(Activity callingActivity) {
+    public static void setFont(Activity callingActivity) {
         FontsOverride.setDefaultFont(callingActivity, "MONOSPACE", "Fonts/DidactGothic-Regular.ttf");
     }
 }

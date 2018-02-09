@@ -1,4 +1,4 @@
-package assignment.lewisd97.railmate.Models;
+package assignment.lewisd97.railmate.src.Models;
 
 import android.os.Parcel;
 import android.os.Parcelable;

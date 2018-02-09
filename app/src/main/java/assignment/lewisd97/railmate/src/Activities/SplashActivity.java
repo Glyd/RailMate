@@ -1,12 +1,10 @@
-package assignment.lewisd97.railmate.Activities;
+package assignment.lewisd97.railmate.src.Activities;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.widget.Toast;
 
-import assignment.lewisd97.railmate.Helpers.FontsOverride;
 import assignment.lewisd97.railmate.R;
 
 /**

@@ -1,4 +1,4 @@
-package assignment.lewisd97.railmate.Helpers;
+package assignment.lewisd97.railmate.src.Helpers;
 
 import android.content.Context;
 import android.location.Location;
@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 
-import assignment.lewisd97.railmate.Models.Station;
+import assignment.lewisd97.railmate.src.Models.Station;
 import assignment.lewisd97.railmate.R;
 
 /**
