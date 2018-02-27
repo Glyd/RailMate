@@ -23,7 +23,7 @@ public class FontsOverride {
             final Field staticField = Typeface.class.getDeclaredField(staticTypefaceFieldName);
             staticField.setAccessible(true);
             staticField.set(null, newTypeface);
-        } catch (Exception e) {
+        }  catch (Exception e) {
             e.printStackTrace();
         }
     }

@@ -3,6 +3,8 @@ package assignment.lewisd97.railmate.src.Helpers;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -10,10 +12,13 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
+import assignment.lewisd97.railmate.R;
+import assignment.lewisd97.railmate.src.Activities.ResultsActivity;
 import assignment.lewisd97.railmate.src.Models.Station;
 
 /**
@@ -34,10 +39,13 @@ public class MapBuilder extends Activity implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
+        /**Add markers to map */
+
         ArrayList<LatLng> latLngArrayList = new ArrayList<>();
         ArrayList<String> stationNameArrayList = new ArrayList<>();
 
-        for (Station station : stationArrayList) {
+         for (Station station : stationArrayList) {
             LatLng latLng = new LatLng(station.getStationLatitude(), station.getStationLongitude());
             String stationName = station.getStationName();
 
@@ -50,12 +58,22 @@ public class MapBuilder extends Activity implements OnMapReadyCallback {
                     .title(stationNameArrayList.get(i)));
         }
 
+        /**Custom theme for map */
 
+        try {
+            googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(callingActivity, R.raw.custom_map_style));
+        } catch (Resources.NotFoundException e) {
+            Log.d("error", "Couldn't find map styling");
+        }
+
+        /** Set up camera position and zoom */
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
 
         CameraUpdate zoom = CameraUpdateFactory.zoomTo(11);
 
         googleMap.animateCamera(zoom);
+
+        /**Enable showing of current location */
 
         if (callingActivity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             googleMap.setMyLocationEnabled(true);

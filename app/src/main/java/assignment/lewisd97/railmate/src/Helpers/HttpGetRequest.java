@@ -43,9 +43,6 @@ public class HttpGetRequest extends AsyncTask<String, Void, BufferedReader> {
             return null;
         }
     }
-    protected void onPostExecute(BufferedReader reader){
-        super.onPostExecute(reader);
-    }
 
     public String getRequestMethod() {
         return requestMethod;

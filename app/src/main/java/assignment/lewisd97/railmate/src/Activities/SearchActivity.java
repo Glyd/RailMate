@@ -102,15 +102,16 @@ public class SearchActivity extends Activity {
         }
     }
 
-    private void getStationsFromLatLng(final LatLng postition) {
+    private void getStationsFromLatLng(final LatLng position) {
         if (hasInternetConnection()) {
                 Thread thread = new Thread() {
                     @Override
                     public void run() {
                         ArrayList<Station> stationsArrayList = new ArrayList<>();
                         URL url;
+
                         try {
-                            url = new URL(createStationUrl(postition));
+                            url = new URL(createStationUrl(position));
 
                             HttpGetRequest getReq = new HttpGetRequest(url);
                             BufferedReader bufferedReader = getReq.execute().get();
@@ -133,9 +134,9 @@ public class SearchActivity extends Activity {
                             }
 
                             if (!stationsArrayList.isEmpty()) {
-                                goToResults(stationsArrayList, postition);
+                                goToResults(stationsArrayList, position);
                             } else {
-                                Toast.makeText(SearchActivity.this, "No stationArrayList found. Please try again!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SearchActivity.this, "No stations found. Please try again!", Toast.LENGTH_SHORT).show();
                             }
                         } catch (Exception e) {
                             e.printStackTrace();

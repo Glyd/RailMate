@@ -30,7 +30,6 @@ public class ResultsActivity extends Activity {
         setContentView(R.layout.activity_results);
         FontsOverride.setFont(this);
 
-
         currentLat = getIntent().getDoubleExtra("Latitude", 0.000);
         currentLong = getIntent().getDoubleExtra("Longitude", 0.000);
 
@@ -48,7 +47,7 @@ public class ResultsActivity extends Activity {
     }
 
     private void createListOfStations() {
-        ListView lv = (ListView) findViewById(R.id.results_listview);
+        ListView lv = findViewById(R.id.results_listview);
         lv.setAdapter(new StationAdapter(this, stationArrayList, currentLat, currentLong));
     }
 }
