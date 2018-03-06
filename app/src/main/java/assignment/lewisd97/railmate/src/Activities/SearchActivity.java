@@ -5,7 +5,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
 import android.location.Criteria;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -32,7 +34,6 @@ import assignment.lewisd97.railmate.R;
 
 public class SearchActivity extends Activity {
 
-    String postcodeApiBaseUrl = "https://api.postcodes.io/postcodes/";
     EditText postcodeET;
 
     @Override
@@ -41,7 +42,7 @@ public class SearchActivity extends Activity {
         setContentView(R.layout.activity_search);
         FontsOverride.setFont(this);
 
-        postcodeET = (EditText) findViewById(R.id.postcodeEntry);
+        postcodeET = findViewById(R.id.postcodeEntry);
 
         //hide keyboard when losing focus, better UX
         View.OnFocusChangeListener ofcListener = new MyFocusChangeListener(this);
@@ -51,16 +52,14 @@ public class SearchActivity extends Activity {
     public void findPostcode(View v) {
         String postcode = postcodeET.getText().toString().replaceAll("\\s+","");
 
-        if (isValidPostcode(postcode) && hasInternetConnection()) {
+        if (isValidPostcode(postcode)) {
             try {
-                URL url = new URL(postcodeApiBaseUrl + postcode);
-                HttpGetRequest getReq = new HttpGetRequest(url);
-                BufferedReader bufferedReader = getReq.execute().get();
+                Geocoder geocoder = new Geocoder(this);
 
-                JSONObject postcodeJson = new JSONObject(bufferedReader.readLine());
+                Address address = geocoder.getFromLocationName(postcode, 1).get(0);
 
-                double latitude = postcodeJson.getJSONObject("result").getDouble("latitude");
-                double longitude = postcodeJson.getJSONObject("result").getDouble("longitude");
+                double latitude = address.getLatitude();
+                double longitude = address.getLongitude();
 
                 getStationsFromLatLng(new LatLng(latitude, longitude));
             } catch (Exception e) {
@@ -76,7 +75,7 @@ public class SearchActivity extends Activity {
             LocationManager locationManager = (LocationManager) this.getSystemService(this.LOCATION_SERVICE);
 
             Criteria criteria = new Criteria();
-            criteria.setAccuracy(Criteria.ACCURACY_FINE);
+            criteria.setAccuracy(Criteria.ACCURACY_COARSE);
             criteria.setPowerRequirement(Criteria.POWER_LOW);
 
             Location location = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, true));
@@ -93,10 +92,11 @@ public class SearchActivity extends Activity {
         switch (requestCode) {
             case Constants.LOCATION_PERMISSION_REQUEST_CODE: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    findLocation(findViewById(R.id.button2));
+                    findLocation(findViewById(R.id.detectButton));
                 } else {
                     Toast.makeText(this, "Location permission is needed for this feature.", Toast.LENGTH_SHORT).show();
                 }
+
                 return;
             }
         }
@@ -107,31 +107,14 @@ public class SearchActivity extends Activity {
                 Thread thread = new Thread() {
                     @Override
                     public void run() {
-                        ArrayList<Station> stationsArrayList = new ArrayList<>();
+                        ArrayList<Station> stationsArrayList;
                         URL url;
 
                         try {
                             url = new URL(createStationUrl(position));
 
                             HttpGetRequest getReq = new HttpGetRequest(url);
-                            BufferedReader bufferedReader = getReq.execute().get();
-
-                            String line;
-
-                            while ((line = bufferedReader.readLine()) != null) {
-                                JSONArray stationsJsonArray = new JSONArray(line);
-                                for (int i = 0; i < stationsJsonArray.length(); i++) {
-                                    JSONObject stationJsonObject = (JSONObject) stationsJsonArray.get(i);
-
-                                    Station station = new Station(
-                                            stationJsonObject.getString("StationName"),
-                                            stationJsonObject.getDouble("Latitude"),
-                                            stationJsonObject.getDouble("Longitude")
-                                    );
-
-                                    stationsArrayList.add(station);
-                                }
-                            }
+                            stationsArrayList = getReq.execute().get();
 
                             if (!stationsArrayList.isEmpty()) {
                                 goToResults(stationsArrayList, position);
@@ -162,12 +145,12 @@ public class SearchActivity extends Activity {
         }
     }
 
-    private String createStationUrl (LatLng postition) {
+    private String createStationUrl (LatLng position) {
         String stationApiBaseUrl = "http://zebedee.kriswelsh.com:8080/stations";
         String baseLat = "?lat=";
         String baseLong = "&lng=";
 
-        return stationApiBaseUrl + baseLat + postition.latitude + baseLong + postition.longitude;
+        return stationApiBaseUrl + baseLat + position.latitude + baseLong + position.longitude;
     }
 
     private boolean hasInternetConnection() {

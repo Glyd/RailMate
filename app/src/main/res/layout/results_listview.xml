@@ -40,6 +40,5 @@
             android:layout_alignBottom="@+id/stationDistance"
             android:layout_marginStart="66dp"/>
     </RelativeLayout>
-
 </RelativeLayout>
 

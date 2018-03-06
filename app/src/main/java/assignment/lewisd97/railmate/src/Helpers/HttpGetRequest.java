@@ -2,17 +2,24 @@ package assignment.lewisd97.railmate.src.Helpers;
 
 import android.os.AsyncTask;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+
+import assignment.lewisd97.railmate.src.Models.Station;
 
 /**
  * Created by lewisd97 on 07/02/2018.
  */
 
-public class HttpGetRequest extends AsyncTask<String, Void, BufferedReader> {
+public class HttpGetRequest extends AsyncTask<String, Void, ArrayList<Station>> {
     private String requestMethod = "GET";
     private int readTimeout = 15000;
     private int connectionTimeout = 15000;
@@ -23,7 +30,7 @@ public class HttpGetRequest extends AsyncTask<String, Void, BufferedReader> {
     }
 
     @Override
-    protected BufferedReader doInBackground(String... params){
+    protected ArrayList<Station> doInBackground(String... params){
         try {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
@@ -34,37 +41,39 @@ public class HttpGetRequest extends AsyncTask<String, Void, BufferedReader> {
             connection.connect();
 
             InputStreamReader streamReader = new InputStreamReader(connection.getInputStream());
-            BufferedReader reader = new BufferedReader(streamReader);
+            BufferedReader bufferedReader = new BufferedReader(streamReader);
 
-            return reader;
+            String line;
+
+            ArrayList<Station> stationsArrayList = new ArrayList<>();
+
+            while ((line = bufferedReader.readLine()) != null) {
+                JSONArray stationsJsonArray = null;
+
+                try {
+                    stationsJsonArray = new JSONArray(line);
+
+                    for (int i = 0; i < stationsJsonArray.length(); i++) {
+                        JSONObject stationJsonObject = (JSONObject) stationsJsonArray.get(i);
+
+                        Station station = new Station(
+                                stationJsonObject.getString("StationName"),
+                                stationJsonObject.getDouble("Latitude"),
+                                stationJsonObject.getDouble("Longitude")
+                        );
+
+                        stationsArrayList.add(station);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            return stationsArrayList;
         }
         catch(IOException e){
             e.printStackTrace();
             return null;
         }
-    }
-
-    public String getRequestMethod() {
-        return requestMethod;
-    }
-
-    public void setRequestMethod(String requestMethod) {
-        this.requestMethod = requestMethod;
-    }
-
-    public int getReadTimeout() {
-        return readTimeout;
-    }
-
-    public void setReadTimeout(int readTimeout) {
-        this.readTimeout = readTimeout;
-    }
-
-    public int getConnectionTimeout() {
-        return connectionTimeout;
-    }
-
-    public void setConnectionTimeout(int connectionTimeout) {
-        this.connectionTimeout = connectionTimeout;
     }
 }

@@ -18,7 +18,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.ArrayList;
 
 import assignment.lewisd97.railmate.R;
-import assignment.lewisd97.railmate.src.Activities.ResultsActivity;
 import assignment.lewisd97.railmate.src.Models.Station;
 
 /**
@@ -26,7 +25,6 @@ import assignment.lewisd97.railmate.src.Models.Station;
  */
 
 public class MapBuilder extends Activity implements OnMapReadyCallback {
-    // Include the OnCreate() method here too, as described above.
     ArrayList<Station> stationArrayList;
     LatLng currentLocation;
     Activity callingActivity;
